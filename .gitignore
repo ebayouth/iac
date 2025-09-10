@@ -13,3 +13,5 @@ crash.*.log
 # Ignore variable files with sensitive data
 *.tfvars
 *.tfvars.json
+
+*.vscode/

@@ -1,0 +1,18 @@
+- hosts: webservers
+  become: yes
+  tasks:
+    - name: Update package cache
+      yum:
+        name: "*"
+        state: latest
+
+    - name: Install Nginx
+      yum:
+        name: nginx
+        state: present
+
+    - name: Start and enable Nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
