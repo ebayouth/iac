@@ -1,0 +1,10 @@
+host_vars:
+  54.169.202.122:
+    port: 80
+    index_msg: "Hai from host 1"
+  13.213.8.218:
+    port: 8080
+    index_msg: "Hai from host 2"
+
+nginx_conf_path: /etc/nginx/sites-available/default
+document_root: /var/www/html

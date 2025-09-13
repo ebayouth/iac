@@ -1,0 +1,9 @@
+server {
+    listen {{ host_vars[inventory_hostname].port }};
+    server_name localhost;
+
+    location / {
+        root {{ document_root }};
+        index index.html;
+    }
+}

@@ -1,0 +1,20 @@
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Deploy Nginx configuration
+  template:
+    src: nginx.conf.j2
+    dest: "{{ nginx_conf_path }}"
+
+- name: Deploy index.html
+  template:
+    src: index.html.j2
+    dest: "{{ document_root }}/index.html"
+
+- name: Restart Nginx service
+  service:
+    name: nginx
+    state: restarted
