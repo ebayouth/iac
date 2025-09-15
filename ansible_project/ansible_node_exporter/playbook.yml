@@ -1,0 +1,70 @@
+---
+- name: Install Node Exporter on EC2 (simple)
+  hosts: servers
+  become: yes
+
+  vars:
+    node_exporter_user: "node_exporter"
+    node_exporter_dir: "/opt/node_exporter"
+
+  tasks:
+    - name: Create node_exporter user
+      user:
+        name: "{{ node_exporter_user }}"
+        system: yes
+        shell: /bin/false
+
+    - name: Create installation directory
+      file:
+        path: "{{ node_exporter_dir }}"
+        state: directory
+        owner: "{{ node_exporter_user }}"
+        group: "{{ node_exporter_user }}"
+
+    - name: Download Node Exporter tarball
+      get_url:
+        url: "https://github.com/prometheus/node_exporter/releases/download/v1.9.1/node_exporter-1.9.1.linux-amd64.tar.gz"
+        dest: "/tmp/node_exporter.tar.gz"
+
+    - name: Extract Node Exporter
+      unarchive:
+        src: "/tmp/node_exporter.tar.gz"
+        dest: "{{ node_exporter_dir }}"
+        remote_src: yes
+        extra_opts: [--strip-components=1]
+
+    - name: Set ownership
+      file:
+        path: "{{ node_exporter_dir }}"
+        state: directory
+        owner: "{{ node_exporter_user }}"
+        group: "{{ node_exporter_user }}"
+        recurse: yes
+
+    - name: Create systemd service file
+      copy:
+        dest: /etc/systemd/system/node_exporter.service
+        content: |
+          [Unit]
+          Description=Node Exporter
+          Wants=network-online.target
+          After=network-online.target
+
+          [Service]
+          User={{ node_exporter_user }}
+          Group={{ node_exporter_user }}
+          Type=simple
+          ExecStart={{ node_exporter_dir }}/node_exporter
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd daemon
+      command: systemctl daemon-reload
+
+    - name: Enable and start Node Exporter
+      systemd:
+        name: node_exporter
+        enabled: yes
+        state: started

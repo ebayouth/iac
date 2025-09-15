@@ -1,0 +1,1 @@
+Installasi node_exporter di 2 server sebagai agent exporter
